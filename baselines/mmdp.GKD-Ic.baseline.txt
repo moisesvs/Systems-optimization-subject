@@ -1,0 +1,21 @@
+Baseline
+GKD-Ic_1_n500_m50.txt	6.8710				
+GKD-Ic_2_n500_m50.txt	6.7971				
+GKD-Ic_3_n500_m50.txt	6.8293				
+GKD-Ic_4_n500_m50.txt	6.8942				
+GKD-Ic_5_n500_m50.txt	6.7823				
+GKD-Ic_6_n500_m50.txt	6.7691				
+GKD-Ic_7_n500_m50.txt	6.9203				
+GKD-Ic_8_n500_m50.txt	6.7875				
+GKD-Ic_9_n500_m50.txt	6.8768				
+GKD-Ic_10_n500_m50.txt	6.7483				
+GKD-Ic_11_n500_m50.txt	6.8330				
+GKD-Ic_12_n500_m50.txt	6.7007				
+GKD-Ic_13_n500_m50.txt	6.6528				
+GKD-Ic_14_n500_m50.txt	6.8564				
+GKD-Ic_15_n500_m50.txt	6.7454				
+GKD-Ic_16_n500_m50.txt	6.8250				
+GKD-Ic_17_n500_m50.txt	6.7342				
+GKD-Ic_18_n500_m50.txt	6.8242				
+GKD-Ic_19_n500_m50.txt	7.3756				
+GKD-Ic_20_n500_m50.txt	6.9051

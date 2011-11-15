@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename type &apos;Application.SolutionMMDP&apos; to &apos;SolutionCutWidth&apos;&#x0A;- Original project: &apos;Practica1_CutWidth&apos;&#x0A;- Original element: &apos;Application.SolutionMMDP&apos;&#x0A;- Renamed element: &apos;Application.SolutionCutWidth&apos;&#x0A;- Update references to refactored element&#x0A;- Update textual occurrences in comments and strings" description="Rename type &apos;SolutionMMDP&apos;" flags="589830" id="org.eclipse.jdt.ui.rename.type" input="/src&lt;Application{SolutionMMDP.java[SolutionMMDP" matchStrategy="1" name="SolutionCutWidth" qualified="false" references="true" similarDeclarations="false" stamp="1319486173161" textual="false" version="1.0"/>
+</session>

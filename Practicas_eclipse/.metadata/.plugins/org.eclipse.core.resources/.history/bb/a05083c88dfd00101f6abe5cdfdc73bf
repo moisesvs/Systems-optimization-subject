@@ -1,0 +1,55 @@
+package Application;
+
+import java.util.Random;
+
+public class RandomSolution {
+
+	private MMDPInstance instanceMMDP;
+	
+	private Random generator;
+	
+	private int numNodos;
+	
+	public RandomSolution (MMDPInstance instanceMMD){
+		this.instanceMMDP = instanceMMD;
+		this.numNodos = this.instanceMMDP.getNumNodesSelection();
+		this.generator = new Random();
+	}
+	
+	/**
+	 * Create a list of the length parameter numSolutions
+	 * @param numSolutions
+	 * @return the list of the length numSolutions
+	 */
+	public SolutionMMDP [] createSolutions(int numSolutions){
+		SolutionMMDP [] solutionList = new SolutionMMDP[numSolutions];
+		boolean [] listBooleans = new boolean [numNodos];
+		
+		for (int i = 0; i < solutionList.length; i++){
+			int [] listArraySolution = new int [numNodos];
+			
+			// reset list boolean
+			for (int z = 0; z < listBooleans.length; z ++){
+				listBooleans[z] = true;
+			}
+			
+			for (int j = 0; j < numNodos; j ++){
+				int numRandom = generator.nextInt(numNodos);
+				
+				// generating numbers random
+				while (listBooleans[numRandom] == false){
+					numRandom = generator.nextInt(numNodos);
+				}
+				
+				listBooleans[numRandom] = false;
+				listArraySolution[j] = numRandom;
+			}
+			
+			// set solution
+			solutionList[i] = new SolutionMMDP();
+			solutionList[i].setSolution(listArraySolution);
+		}
+		
+		return solutionList;
+	} 
+}

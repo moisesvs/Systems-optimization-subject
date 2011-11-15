@@ -1,0 +1,7 @@
+1317492831519	Move compilation units
+1317492952145	Rename type 'CutWidthInstance'
+1317580846470	Encapsulate field 'isClient'
+1317580852193	Encapsulate field 'id'
+1317580857623	Encapsulate field 'coordX'
+1317580862785	Encapsulate field 'coordY'
+1317580870896	Encapsulate field 'demand'

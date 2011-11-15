@@ -1,0 +1,10 @@
+1317488550142	Rename method 'cargar'
+1317488557809	Rename method 'imprimir'
+1317488569102	Rename field 'fichero'
+1317488610170	Rename field 'matrizDistancias'
+1317488644680	Rename type 'MMDPInstancia'
+1317488728173	Rename type 'Aplicacion'
+1317488742290	Rename local variable 'carpeta'
+1317488763966	Rename method 'cargarInstancias'
+1317489750051	Rename local variable 'instancias'
+1317492808654	Move compilation units

@@ -1,0 +1,49 @@
+package Application;
+
+public class SolutionMMDP {
+		
+		/**
+		 * Solution array
+		 */
+		private boolean [] solution;
+		
+		/**
+		 * Instance problem MMDP
+		 */
+		private MMDPInstance instanceMMDP; 
+		
+		public SolutionMMDP (){
+//			this.solution = solution;
+		}
+		
+		public void setSolution (boolean [] solution){
+			this.solution = solution;
+		}
+		
+		public boolean [] getSolution(){
+			return this.solution;
+		}
+		
+		/**
+		 * Solution is factible if the length array not higher that the number nodes M,
+		 * and the number position true not higher that number nodes N
+		 * @return
+		 */
+		public boolean isFactible(){
+			
+			if (this.solution.length != this.instanceMMDP.getNumNodes())
+				return false;
+			
+			int numNodesSelection = 0;
+			
+			for (int i = 0; i < this.solution.length; i ++){
+				if (this.solution[i])
+					numNodesSelection ++;
+			}
+			
+			if (numNodesSelection > this.instanceMMDP.getNumNodes())
+				return false;
+			
+			return true;
+		}
+}

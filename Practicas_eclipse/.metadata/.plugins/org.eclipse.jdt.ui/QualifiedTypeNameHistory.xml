@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<qualifiedTypeNameHistroy>
+<fullyQualifiedTypeName name="java.lang.System"/>
+<fullyQualifiedTypeName name="org.omg.PortableInterceptor.INACTIVE"/>
+<fullyQualifiedTypeName name="java.util.ArrayList"/>
+<fullyQualifiedTypeName name="java.util.Random"/>
+<fullyQualifiedTypeName name="org.w3c.dom.ls.LSInput"/>
+<fullyQualifiedTypeName name="java.lang.Double"/>
+<fullyQualifiedTypeName name="javax.swing.text.html.MinimalHTMLWriter"/>
+<fullyQualifiedTypeName name="Application.MMDPInstance"/>
+<fullyQualifiedTypeName name="Application.SolutionMMDP"/>
+<fullyQualifiedTypeName name="Application.RandomSolution"/>
+<fullyQualifiedTypeName name="Application.Constants"/>
+<fullyQualifiedTypeName name="java.util.concurrent.TimeUnit"/>
+<fullyQualifiedTypeName name="Application.CutWidthInstance"/>
+</qualifiedTypeNameHistroy>
