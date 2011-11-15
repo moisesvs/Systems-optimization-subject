@@ -1,0 +1,113 @@
+package Application;
+import java.io.File;
+/* 
+Construir una clase solución.
+Construir una solución aleatoria quitando elementos.
+
+Opciones:
+	Tirar un dado y donde caiga si esta ocupado vuelvo a tirar hasta que salga libre
+	Tirar un dado y donde me caiga le pongo a uno si eso me voy al siguiente 0
+	Tirar un dado y quitar ese elemento de la lista hasta el siguiente elemento.
+
+Evaluar la solución por z(x) para que me de algo = 37. Si tengo otra solución que me da	45. 45 es mejor solución al
+tratarse de una solución mejor por que tengo que maximizar. Hay que recordar la mejor solución vista hasta el momento.
+
+Construir un metodo que me diga si es solución factible
+Construir un metodo que me diga lo que vale la función objetivo
+
+La instancia es una clase instancia: Instancia que esta la clase MMDP y tiene las distancias en el constructor.
+La clase soluciones tiene una referencia (getObjetiveFunction), tiene que tener el número de M y N. Tendra que tener un array
+que será la solución.
+
+boolean [] solution -- Tiene que ser factible
+setObjetiveFunctionValue -- Podría ser que te dan el valor de la función objetivo
+
+Se cosntuyen soluciones aleatorias, clase RamdomConstructive, y me genera 1000 solucciones aleatorias o lo que sean. En el constructor
+debe de ir indicado el número de soluciones que van a ir. Esta clase va a tener una Solution y ademas va a tener un int con el bestSolution
+
+
+Cutwidth un array de enteros la solución
+Una instancia será una matrix de conexiones.
+
+
+p-Hub 
+La instancia me determina cuantos tienen que actuar como servidores y cuantos como nodos.  El objetivo es decidir a que servidor engancho cada
+uno de los clientes. La estructura de la solución
+
+La funcion objetivo es la suma de las distancia de cada cliente a su servidor. y minimizar las distancias.
+*/
+public class Application {
+
+	public static void main(String[] args) {
+		String folder = "instancias/GKD-Ic";
+		MMDPInstance[] instancesFile = loadingInstances(folder);
+
+		MMDPInstance instanceChoose = instancesFile[0];
+		SolutionMMDP [] solutions = createSolutionsRandom(instanceChoose, 100000000);
+		
+		// Time execute algorithm
+		long time1 = System.currentTimeMillis();
+		SolutionMMDP bestSolution = executeAlgorithm(instanceChoose, solutions);
+		long total = System.currentTimeMillis() - time1;
+		
+		System.out.println("Nodes choose (" + instanceChoose.getFile().getName() + "): "  + bestSolution);
+		System.out.println("Best Solution (" + instanceChoose.getFile().getName() + "): "  + bestSolution.getValueFunctionObjetive());
+	}
+
+	private static MMDPInstance[] loadingInstances(String carpeta) {
+		
+		File dir = new File(carpeta);
+		File[] instanciasFile = dir.listFiles();
+		
+		// Init MMDP Instante
+		MMDPInstance [] instancesProblem = new MMDPInstance[instanciasFile.length];
+		
+		for (int i = 0; i < instanciasFile.length; i++) {
+			
+			MMDPInstance instance = new MMDPInstance(instanciasFile[i]);
+			instance.loading();
+			instancesProblem[i] = instance;
+			
+		}
+		
+		return instancesProblem;
+	}
+	
+	private static SolutionMMDP[] createSolutionsRandom(MMDPInstance instance, int numSolutionsRandom){
+		RandomSolution random = new RandomSolution(instance);
+		return random.createSolutionsArray(numSolutionsRandom);
+	}
+	
+	/**
+	 * Execute algorithm with set solutions
+	 * @param instance
+	 * @param solutions
+	 * @return
+	 */
+	private static SolutionMMDP executeAlgorithm (MMDPInstance instance, int numSolutionsEvalute){
+		// Creator solutions
+		RandomSolution random = new RandomSolution(instance);
+		
+		// Max solution
+		double bestSolutionValue = Double.MIN_VALUE;
+		SolutionMMDP analizingSolution = random.createSolution();
+		SolutionMMDP bestSolution = analizingSolution;
+
+		//TODO: Check time current limit
+
+		for (int i = 0; i < numSolutionsEvalute; i ++){
+			double valueFuntionObjetive = instance.getValueObjetiveFunction(solutions[i]);
+			
+			
+			if (instance.bestValueObjetiveFunction(bestSolutionValue, valueFuntionObjetive)){
+				bestSolutionValue = valueFuntionObjetive;
+				bestSolution = solutions[i];
+				solutions[i].setValueFunctionObjetive(valueFuntionObjetive);
+			}
+			
+			analizingSolution = random.createSolution()
+		}
+		
+		return bestSolution;
+	}
+}

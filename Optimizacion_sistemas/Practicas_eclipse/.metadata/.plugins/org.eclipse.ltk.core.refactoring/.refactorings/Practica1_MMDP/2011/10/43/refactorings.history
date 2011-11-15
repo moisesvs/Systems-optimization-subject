@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Copy 2 elements(s) to &apos;Practica1_CutWidth/src/Application&apos;&#x0A;- Original project: &apos;Practica1_MMDP&apos;&#x0A;- Destination element: &apos;Practica1_CutWidth/src/Application&apos;&#x0A;- Original elements:&#x0A;     Application.RandomSolution.java&#x0A;     Application.SolutionMMDP.java" description="Copy compilation units" destination="=Practica1_CutWidth/src&lt;Application" element1="/src&lt;Application{RandomSolution.java" element2="/src&lt;Application{SolutionMMDP.java" files="0" flags="589830" folders="0" id="org.eclipse.jdt.ui.copy" policy="org.eclipse.jdt.ui.copyResources" stamp="1319486156733" units="2" version="1.0"/>
+</session>

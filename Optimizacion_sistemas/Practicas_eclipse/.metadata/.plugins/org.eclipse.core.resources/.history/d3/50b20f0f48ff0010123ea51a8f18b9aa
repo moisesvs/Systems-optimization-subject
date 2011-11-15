@@ -1,0 +1,82 @@
+package Application;
+
+public class SolutionCutWidth {
+		
+	/**
+	 * Solution array
+	 */
+	private boolean [][] solution;
+	
+	/**
+	 * Instance problem MMDP
+	 */
+	private CutWidthInstance instanceCutwidth; 
+	
+	/**
+	 * Instance problem MMDP
+	 */
+	private double valueFunctionObjetive; 
+	
+	public SolutionCutWidth (CutWidthInstance instance, boolean [][] solution){
+		this.instanceMMDP = instance;
+		this.solution = solution;
+	}
+	
+	public void setSolution (boolean [][] solution){
+		this.solution = solution;
+	}
+	
+	public boolean [][] getSolution(){
+		return this.solution;
+	}
+	
+	/**
+	 * Solution is factible if the length array not higher that the number nodes M,
+	 * and the number position true not higher that number nodes N
+	 * @return
+	 */
+	public boolean isFactible(){
+		
+		// Check if not higher that num 
+		if (this.solution.length != this.instanceMMDP.getNumNodes())
+			return false;
+		
+		int numNodesSelection = 0;
+		
+		// Check if not higher that numNodesSelection
+		for (int i = 0; i < this.solution.length; i ++){
+			if (this.solution[i])
+				numNodesSelection ++;
+		}
+		
+		if (numNodesSelection > this.instanceMMDP.getNumNodes())
+			return false;
+		
+		return true;
+	}
+	
+	public String toString(){
+		
+		String cad = "";
+		
+		for (int i = 0; i < this.solution.length; i ++)
+			cad += this.solution[i] + "  ";
+		
+		return cad;
+	}
+
+	// Gets and sets
+	/**
+	 * @param valueFunctionObjetive the valueFunctionObjetive to set
+	 */
+	public void setValueFunctionObjetive(double valueFunctionObjetive) {
+		this.valueFunctionObjetive = valueFunctionObjetive;
+	}
+
+	/**
+	 * @return the valueFunctionObjetive
+	 */
+	public double getValueFunctionObjetive() {
+		return valueFunctionObjetive;
+	}
+}

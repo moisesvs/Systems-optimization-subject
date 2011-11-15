@@ -1,0 +1,61 @@
+package Application;
+
+import java.util.Random;
+
+public class RandomSolution {
+
+	private CutWidthInstance instanceMMDP;
+	
+	private Random generator;
+	
+	private int numNodesSelection;
+	
+	private int numNodes;
+	
+	public RandomSolution (CutWidthInstance instanceCutdWidth){
+		this.instanceMMDP = instanceCutdWidth;
+		this.numNodesSelection = this.instanceMMDP.getNumNodesSelection();
+		this.numNodes = this.instanceMMDP.getNumNodes();
+		this.generator = new Random();
+	}
+	
+	/**
+	 * Create a list of the length parameter numSolutions
+	 * @param numSolutions
+	 * @return the list of the length numSolutions
+	 */
+	public SolutionCutWidth createSolution(){
+		boolean [] listBooleans = new boolean [numNodes];
+		boolean [] listArraySolution = new boolean [numNodes];
+			
+		for (int j = 0; j < numNodesSelection; j ++){
+			// generate number random
+			int numRandom = generator.nextInt(numNodes);
+			
+			// search if position occupied and find position free
+			while (listBooleans[numRandom] == true)
+				numRandom = generator.nextInt(numNodes);
+
+			listBooleans[numRandom] = true;
+			listArraySolution[numRandom] = true;
+		}
+		
+		return new SolutionCutWidth(instanceMMDP, listArraySolution);
+	}
+	
+	/**
+	 * Create a list of the length parameter numSolutions
+	 * @param numSolutions
+	 * @return the list of the length numSolutions
+	 */
+	public SolutionCutWidth [] createSolutionsArray(int numSolutions){
+		SolutionCutWidth [] solutionList = new SolutionCutWidth[numSolutions];
+		
+		for (int i = 0; i < solutionList.length; i++){		
+			// set solution
+			solutionList[i] = createSolution();
+		}
+		
+		return solutionList;
+	}
+}
