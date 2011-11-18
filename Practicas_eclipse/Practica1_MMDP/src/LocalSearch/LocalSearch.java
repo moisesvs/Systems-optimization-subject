@@ -23,6 +23,11 @@ public abstract class LocalSearch {
 		protected int numNodes;
 		
 		/**
+		 * Number nodes selected instance
+		 */
+		protected int numNodesSelected;
+		
+		/**
 		 * Constructor default LocalSearch
 		 */
 		public LocalSearch (){ 
@@ -39,6 +44,7 @@ public abstract class LocalSearch {
 			
 			this.randomNumber = new Random();
 			numNodes = this.instance.getNumNodes();
+			numNodesSelected = this.instance.getNumNodesSelection();
 		}
 		
 		/**

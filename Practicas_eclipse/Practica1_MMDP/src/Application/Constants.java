@@ -20,7 +20,12 @@ public class Constants {
 		/**
 		 * Time in minutes that is execute algorithm
 		 */
-		public static final float TIME_ALGORITHM = 2f;
+		public static final int K_ITERATIONS_TABU = 5;
+		
+		/**
+		 * Time in minutes that is execute algorithm
+		 */
+		public static final float TIME_ALGORITHM = 1f;
 		
 		/**
 		 * Time in milliseconds that is execute algorithm

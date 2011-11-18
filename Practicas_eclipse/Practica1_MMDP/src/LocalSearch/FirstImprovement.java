@@ -5,12 +5,28 @@ import Application.SolutionMMDP;
 
 public class FirstImprovement extends LocalSearch {
 
-		public FirstImprovement (){
+		/**
+		 * if the random sort or lexicographic, true if random, false lexicographic
+		 */
+		private boolean typeFirstImprovement;
+		
+		/**
+		 * Default constructor
+		 * @param typeFirstImprovement
+		 */
+		public FirstImprovement (boolean typeFirstImprovement){
 			super();
+			this.typeFirstImprovement = typeFirstImprovement;
 		}
-	
-		public FirstImprovement (MMDPInstance instance){
+		
+		/**
+		 * Constructor with instance
+		 * @param instance
+		 * @param typeFirstImprovement
+		 */
+		public FirstImprovement (MMDPInstance instance, boolean typeFirstImprovement){
 			super(instance);
+			this.typeFirstImprovement = typeFirstImprovement;
 		}
 		
 		/**
@@ -20,7 +36,8 @@ public class FirstImprovement extends LocalSearch {
 		public SolutionMMDP executeLocalSearchAlgorithm(SolutionMMDP solutionMMDP){
 			
 			boolean [] chooseNodesNeighbors = new boolean[instance.getNumNodes()];
-			
+			initChooseNodeNeighbors(solutionMMDP, chooseNodesNeighbors);
+
 			SolutionMMDP bestSolutionMMDP =  solutionMMDP;
 			double bestSolutionValue = instance.getValueObjetiveFunction(solutionMMDP);
 			// create one neighbor
@@ -29,12 +46,11 @@ public class FirstImprovement extends LocalSearch {
 			// execute algorithm
 			while (true){
 				
-				// check if all neigbor visited
+				// check if all neighbor visited
 				if (exitNeighbor(bestSolutionMMDP, chooseNodesNeighbors))
 					break;
 				
-				// create one neighbor
-				neighborhoodSolution = createNeighbor(bestSolutionMMDP, chooseNodesNeighbors);
+
 				double otherValueSolution = instance.getValueObjetiveFunction(neighborhoodSolution);
 				
 				if (instance.bestValueObjetiveFunction(bestSolutionValue, otherValueSolution)){
@@ -42,11 +58,21 @@ public class FirstImprovement extends LocalSearch {
 					bestSolutionMMDP = neighborhoodSolution;
 					bestSolutionMMDP.setValueFunctionObjetive(bestSolutionValue);
 					
-					resetNeighbor(chooseNodesNeighbors);
+					resetNeighbor(neighborhoodSolution, chooseNodesNeighbors);
 				}
+				
+				// create one neighbor
+				neighborhoodSolution = createNeighbor(bestSolutionMMDP, chooseNodesNeighbors);
 			}
 			
 			return bestSolutionMMDP;
+		}
+		
+		private SolutionMMDP createNeighbor(SolutionMMDP solution, boolean [] chooseNodesNeighbors){
+			if (this.typeFirstImprovement) 
+				return createNeighborRandom(solution, chooseNodesNeighbors);
+			else
+				return createNeighborLexicographic(solution, chooseNodesNeighbors);
 		}
 		
 		/**
@@ -54,39 +80,94 @@ public class FirstImprovement extends LocalSearch {
 		 * @param currentSolution
 		 * @return
 		 */
-		private SolutionMMDP createNeighbor (SolutionMMDP currentSolution, boolean [] chooseNodesNeighbors){
+		private SolutionMMDP createNeighborLexicographic (SolutionMMDP currentSolution, boolean [] chooseNodesNeighbors){
 			// clone solution
 			boolean [] currentSolutionNodes = currentSolution.getSolution();
 			boolean [] currentSolutionNodesCopy = currentSolution.getSolution().clone();
-			
-			int numberRandomFill = Integer.MIN_VALUE;
-			int numberRandomEmpthy = Integer.MIN_VALUE;
 
-			// fill
+			int nNodeNotSelected = Integer.MIN_VALUE;
+			int nNodeSelected = Integer.MIN_VALUE;
+
 			for(;;){
 				// random number
-				numberRandomFill = this.randomNumber.nextInt(numNodes);
+				nNodeSelected = this.randomNumber.nextInt(numNodes);
+				if (currentSolutionNodes[nNodeSelected])
+					break;		
+			}
+
+			// polity first improve change the first node find 
+			for(int i = 0; i < currentSolutionNodes.length; i ++){
 				// choose node not change last
-				if ((currentSolutionNodes[numberRandomFill]) && (!chooseNodesNeighbors[numberRandomFill])){
-					chooseNodesNeighbors[numberRandomFill] = true;
+				nNodeNotSelected = i;
+				
+				if (!chooseNodesNeighbors[nNodeNotSelected]){
+					chooseNodesNeighbors[nNodeNotSelected] = true;
 					break;
 				}
 			}
+			
+			// change values
+			currentSolutionNodesCopy[nNodeSelected] = false;
+			currentSolutionNodesCopy[nNodeNotSelected] = true;
+			
+			SolutionMMDP solutionNeighbor = new SolutionMMDP(instance, currentSolutionNodesCopy);
+			return solutionNeighbor;
+		}
+		
+		
+		/**
+		 * Create the neighborhood with a move in the solution
+		 * @param currentSolution
+		 * @return
+		 */
+		private SolutionMMDP createNeighborRandom (SolutionMMDP currentSolution, boolean [] chooseNodesNeighbors){
+			// clone solution
+			boolean [] currentSolutionNodes = currentSolution.getSolution();
+			boolean [] currentSolutionNodesCopy = currentSolution.getSolution().clone();
+
+			int nNodeNotSelected = Integer.MIN_VALUE;
+			int nNodeSelected = Integer.MIN_VALUE;
 
 			// empthy
 			for(;;){
 				// random number
-				numberRandomEmpthy = this.randomNumber.nextInt(numNodes);
-				if (!currentSolutionNodes[numberRandomEmpthy])
+				nNodeSelected = this.randomNumber.nextInt(numNodes);
+				if (currentSolutionNodes[nNodeSelected])
 					break;		
 			}
 
+			// polity first improve change the first node find random
+			for(;;){
+				// random number
+				nNodeNotSelected = this.randomNumber.nextInt(numNodes);
+				// choose node not change last
+				if (!chooseNodesNeighbors[nNodeNotSelected]){
+					chooseNodesNeighbors[nNodeNotSelected] = true;
+					break;
+				}
+			}
+			
 			// change values
-			currentSolutionNodesCopy[numberRandomFill] = false;
-			currentSolutionNodesCopy[numberRandomEmpthy] = true;
+			currentSolutionNodesCopy[nNodeSelected] = false;
+			currentSolutionNodesCopy[nNodeNotSelected] = true;
 			
 			SolutionMMDP solutionNeighbor = new SolutionMMDP(instance, currentSolutionNodesCopy);
 			return solutionNeighbor;
+		}
+		
+		/**
+		 * Init choose nodes neighbors not selections who neighbors
+		 * @param solution
+		 * @param chooseNeighbors
+		 */
+		private void initChooseNodeNeighbors(SolutionMMDP solution, boolean [] chooseNeighbors){
+			boolean [] solutionAux = solution.getSolution();
+			
+			// init choose nodes neighbors not selections who neighbors
+			for (int i = 0; i < solutionAux.length; i ++){
+				if (solutionAux[i])
+					chooseNeighbors[i] = true;
+			}
 		}
 		
 		/**
@@ -100,21 +181,40 @@ public class FirstImprovement extends LocalSearch {
 			boolean [] solutionArray = solution.getSolution();
 
 			for (int node = 0; node < solutionArray.length; node ++){
-				if (solutionArray[node] && (!chooseNodesNeighbors[node]))
-					return true;
+				if (!chooseNodesNeighbors[node])
+					return false;
 			}
 			
-			return false;
+			return true;
 		}
 		
 		/**
 		 * Reset the list nodes neighbors visited
 		 * @param chooseNodesNeighbors
 		 */
-		private void resetNeighbor (boolean [] chooseNodesNeighbors){
-			for (int node = 0; node < chooseNodesNeighbors.length; node ++)
-				chooseNodesNeighbors[node] = false;
+		private void resetNeighbor (SolutionMMDP solution, boolean [] chooseNodesNeighbors){
+			boolean [] solutionAux = solution.getSolution();
 			
+			for (int node = 0; node < chooseNodesNeighbors.length; node ++)
+				if (solutionAux[node])
+					chooseNodesNeighbors[node] = true;
+				else
+					chooseNodesNeighbors[node] = false;
+
 			return;
+		}
+
+		/**
+		 * @return the typeFirstImprovement
+		 */
+		public boolean isTypeFirstImprovement() {
+			return typeFirstImprovement;
+		}
+
+		/**
+		 * @param typeFirstImprovement the typeFirstImprovement to set
+		 */
+		public void setTypeFirstImprovement(boolean typeFirstImprovement) {
+			this.typeFirstImprovement = typeFirstImprovement;
 		}
 }

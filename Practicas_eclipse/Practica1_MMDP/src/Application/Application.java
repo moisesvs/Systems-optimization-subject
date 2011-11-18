@@ -1,6 +1,8 @@
 package Application;
 import java.io.File;
 
+import Algorithm.Algorithm;
+import Algorithm.TabuSearch;
 import Constructive.RandomSolution;
 import LocalSearch.BestImprovement;
 import LocalSearch.FirstImprovement;
@@ -63,23 +65,30 @@ mhAnalizer es mejor cuanto menor es la desviación
 public class Application {
 
 	public static void main(String[] args) {
-//		String folder = "instancias/GKD-Ia";
-		String folder = "instancias/GKD-Ic";
+		String folder = "instancias/GKD-Ia";
+//		String folder = "instancias/GKD-Ic";
 
 		MMDPInstance[] instancesFile = loadingInstances(folder);
 		
-		String cadAllInstanceFirstImprove = executeAllInstancesFirstImprove(instancesFile);
-		Toolbox.writeStringToFile(Constants.NAME_FILE + "_FirstImprove", cadAllInstanceFirstImprove);
+		String cadAllInstanceFirstImproveRandom = executeAllInstancesTabuSearch(instancesFile);
+		Toolbox.writeStringToFile(Constants.NAME_FILE + "_FirstImproveRandom", cadAllInstanceFirstImproveRandom);
 		
-		String cadAllInstanceBestImprove = executeAllInstancesBestImprove(instancesFile);
-		Toolbox.writeStringToFile(Constants.NAME_FILE + "_BestImprove", cadAllInstanceBestImprove);
+//		String cadAllInstanceFirstImproveRandom = executeAllInstancesFirstImproveRandom(instancesFile);
+//		Toolbox.writeStringToFile(Constants.NAME_FILE + "_FirstImproveRandom", cadAllInstanceFirstImproveRandom);
+//		
+//		String cadAllInstanceFirstImproveLexicographic = executeAllInstancesFirstImproveLexicographic(instancesFile);
+//		Toolbox.writeStringToFile(Constants.NAME_FILE + "_FirstImproveLexicographic", cadAllInstanceFirstImproveLexicographic);
+		
+//		String cadAllInstanceBestImprove = executeAllInstancesBestImprove(instancesFile);
+//		Toolbox.writeStringToFile(Constants.NAME_FILE + "_BestImprove", cadAllInstanceBestImprove);
 
-		String cadAllInstanceRandom = executeAllInstancesRandom(instancesFile);
-		Toolbox.writeStringToFile(Constants.NAME_FILE + "_Random", cadAllInstanceRandom);
-		
-		// print result
-		System.out.println(cadAllInstanceFirstImprove + "\n" + cadAllInstanceBestImprove + "\n" + cadAllInstanceRandom);
-		
+//		String cadAllInstanceRandom = executeAllInstancesRandom(instancesFile);
+//		Toolbox.writeStringToFile(Constants.NAME_FILE + "_Random", cadAllInstanceRandom);
+//		
+//		// print result
+//		System.out.println(cadAllInstanceFirstImprove + "\n" + cadAllInstanceBestImprove + "\n" + cadAllInstanceRandom);
+//		System.out.println(cadAllInstanceFirstImproveRandom + "\n" + cadAllInstanceFirstImproveLexicographic + "\n");
+
 	}
 
 	/**
@@ -128,9 +137,9 @@ public class Application {
 	 * @param instances
 	 * @return
 	 */
-	private static String executeAllInstancesFirstImprove(MMDPInstance [] instances){
+	private static String executeAllInstancesFirstImproveLexicographic(MMDPInstance [] instances){
 		
-		String cadAux = Constants.DESCRIPTION_ALGORITHM + "(First Improve)" +"\n";
+		String cadAux = Constants.DESCRIPTION_ALGORITHM + "(First Improve Lexicographic)" +"\n";
 		
 		for (int instance = 0; instance < instances.length; instance ++){
 
@@ -138,7 +147,32 @@ public class Application {
 
 			// Creator new random solution with new instance
 			RandomSolution random = new RandomSolution(intance);
-			LocalSearch localSearchFirstImprove = new FirstImprovement(intance);
+			LocalSearch localSearchFirstImprove = new FirstImprovement(intance, false);
+			Algorithm algoritm = new Algorithm(random, intance, localSearchFirstImprove);
+			SolutionMMDP solution = algoritm.getBestSolution();
+			cadAux += solution.printFormatMhAnalizer();
+
+		}
+		
+		return cadAux;
+	}
+	
+	/**
+	 * Execute algorithm with strategy first improve with instances mmdp parameters
+	 * @param instances
+	 * @return
+	 */
+	private static String executeAllInstancesFirstImproveRandom(MMDPInstance [] instances){
+		
+		String cadAux = Constants.DESCRIPTION_ALGORITHM + "(First Improve Random)" +"\n";
+		
+		for (int instance = 0; instance < instances.length; instance ++){
+
+			MMDPInstance intance = instances[instance];
+
+			// Creator new random solution with new instance
+			RandomSolution random = new RandomSolution(intance);
+			LocalSearch localSearchFirstImprove = new FirstImprovement(intance, true);
 			Algorithm algoritm = new Algorithm(random, intance, localSearchFirstImprove);
 			SolutionMMDP solution = algoritm.getBestSolution();
 			cadAux += solution.printFormatMhAnalizer();
@@ -189,6 +223,30 @@ public class Application {
 			// Creator new random solution with new instance
 			RandomSolution random = new RandomSolution(intance);
 			Algorithm algoritm = new Algorithm(random, intance);
+			SolutionMMDP solution = algoritm.getBestSolution();
+			cadAux += solution.printFormatMhAnalizer();
+			
+		}
+		
+		return cadAux;
+	}
+	
+	/**
+	 * Execute algorithm with strategy tabu searh with instances mmdp parameters
+	 * @param instances read of the file
+	 * @return string to write file
+	 */
+	private static String executeAllInstancesTabuSearch(MMDPInstance [] instances){
+		
+		String cadAux = Constants.DESCRIPTION_ALGORITHM + "(Tabu Search)" + "\n";
+		
+		for (int instance = 0; instance < instances.length; instance ++){
+
+			MMDPInstance intance = instances[instance];
+
+			// Creator new random solution with new instance
+			RandomSolution random = new RandomSolution(intance);
+			Algorithm algoritm = new TabuSearch(random, intance, Constants.K_ITERATIONS_TABU);
 			SolutionMMDP solution = algoritm.getBestSolution();
 			cadAux += solution.printFormatMhAnalizer();
 			

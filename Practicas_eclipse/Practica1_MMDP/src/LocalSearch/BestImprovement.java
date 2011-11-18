@@ -33,7 +33,7 @@ public class BestImprovement extends LocalSearch {
 			// execute algorithm
 			while (true){
 				
-				// check if all neigbor visited
+				// check if all neighbor visited
 				if (exitNeighbor(analizingSolutionMMDP, chooseNodesNeighbors)){
 					if (improve){
 						improve = false;
