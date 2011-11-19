@@ -65,17 +65,17 @@ mhAnalizer es mejor cuanto menor es la desviación
 public class Application {
 
 	public static void main(String[] args) {
-		String folder = "instancias/GKD-Ia";
-//		String folder = "instancias/GKD-Ic";
+//		String folder = "instancias/GKD-Ia";
+		String folder = "instancias/GKD-Ic";
 
 		MMDPInstance[] instancesFile = loadingInstances(folder);
 		
-		String cadAllInstanceFirstImproveRandom = executeAllInstancesTabuSearch(instancesFile);
-		Toolbox.writeStringToFile(Constants.NAME_FILE + "_FirstImproveRandom", cadAllInstanceFirstImproveRandom);
+		String cadAllInstanceTabuSearch = executeAllInstancesTabuSearch(instancesFile);
+		Toolbox.writeStringToFile(Constants.NAME_FILE + "_TabuSearch", cadAllInstanceTabuSearch);
 		
 //		String cadAllInstanceFirstImproveRandom = executeAllInstancesFirstImproveRandom(instancesFile);
 //		Toolbox.writeStringToFile(Constants.NAME_FILE + "_FirstImproveRandom", cadAllInstanceFirstImproveRandom);
-//		
+		
 //		String cadAllInstanceFirstImproveLexicographic = executeAllInstancesFirstImproveLexicographic(instancesFile);
 //		Toolbox.writeStringToFile(Constants.NAME_FILE + "_FirstImproveLexicographic", cadAllInstanceFirstImproveLexicographic);
 		
@@ -87,7 +87,7 @@ public class Application {
 //		
 //		// print result
 //		System.out.println(cadAllInstanceFirstImprove + "\n" + cadAllInstanceBestImprove + "\n" + cadAllInstanceRandom);
-//		System.out.println(cadAllInstanceFirstImproveRandom + "\n" + cadAllInstanceFirstImproveLexicographic + "\n");
+		System.out.println(cadAllInstanceTabuSearch + "\n");
 
 	}
 
@@ -246,7 +246,7 @@ public class Application {
 
 			// Creator new random solution with new instance
 			RandomSolution random = new RandomSolution(intance);
-			Algorithm algoritm = new TabuSearch(random, intance, Constants.K_ITERATIONS_TABU);
+			Algorithm algoritm = new TabuSearch(random, intance);
 			SolutionMMDP solution = algoritm.getBestSolution();
 			cadAux += solution.printFormatMhAnalizer();
 			

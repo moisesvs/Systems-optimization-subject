@@ -12,6 +12,20 @@ public class Constants {
 		 */
 		public static final String NAME_FILE = "./Solutions/Algorithm_MMDP";
 
+		// Variables algorithm VNS (VND - Variant Neighborhood Descent)
+		/**
+		 * Number neighbord VNS
+		 */
+		public static final int K_NEIGHBORD_VNS = -1;
+		
+		// Variables algorithm Tabu Search
+		/**
+		 * Time in minutes that is execute algorithm
+		 */
+		public static final int TABU = -1;
+		
+		
+		// Variables algorithm First improve, Best improve and random
 		/**
 		 * Number solution generates to algorithm random
 		 */
@@ -25,7 +39,7 @@ public class Constants {
 		/**
 		 * Time in minutes that is execute algorithm
 		 */
-		public static final float TIME_ALGORITHM = 1f;
+		public static final float TIME_ALGORITHM = 5f;
 		
 		/**
 		 * Time in milliseconds that is execute algorithm

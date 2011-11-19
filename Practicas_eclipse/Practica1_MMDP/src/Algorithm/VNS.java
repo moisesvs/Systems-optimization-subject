@@ -6,60 +6,31 @@ import Application.SolutionMMDP;
 import Constructive.RandomSolution;
 import LocalSearch.LocalSearch;
 
-public class TabuSearch extends Algorithm {
+public class VNS extends Algorithm {
 
 	/**
-	 * The parameter K iterations of the algorithm tabu search
+	 * The parameter K the neighbors
 	 */
-	private int kIterationsTabu;
+	private int kNeighbors;
 	
 	/**
-	 * Tabu short term list
+	 * Local search algorithm
 	 */
-	private int [] tabuShortTermList;
-	
-	/**
-	 * Tabu large term list
-	 */
-	private int [] tabuLongTermList;
-	
-	/**
-	 * Position origin
-	 */
-	private int positionOrigin;
-	
-	/**
-	 * Position destination
-	 */
-	private int positionDestination;
-	
-	/**
-	 * Tabu table exchanges fitness
-	 * First position node origin change
-	 * Second position node destination change
-	 * Third position fitness value
-	 */
-	private double [][] tablaTabuFitnessNeighbors;
+	private LocalSearch localSearch;
 	
 	/**
 	 * Execute algorithm with number solution with random generator
 	 * @param randomGenerator
 	 * @param numSolution
 	 */
-	public TabuSearch (RandomSolution randomGenerator, MMDPInstance instance){
+	public VNS (RandomSolution randomGenerator, MMDPInstance instance, LocalSearch localSearch){
 		super(randomGenerator,instance);
 		
 		// init algorithm
-		this.kIterationsTabu = instance.getNumNodesSelection();
-		this.tabuShortTermList = new int [instance.getNumNodes()];
-		this.tabuLongTermList = new int [instance.getNumNodes()];
-		this.tablaTabuFitnessNeighbors = new double [(instance.getNumNodes() * instance.getNumNodesSelection()) - 
-		                                             instance.getNumNodesSelection() * instance.getNumNodesSelection() ][3];
+		this.kNeighbors = Constants.K_NEIGHBORD_VNS;
 		
 		long timeFirst = System.currentTimeMillis();
-
 		bestSolution = executeAlgorithm(randomGenerator, instance);
-
 		long totalTime = System.currentTimeMillis() - timeFirst;
 		
 		// set time in solution
@@ -113,50 +84,29 @@ public class TabuSearch extends Algorithm {
 		return bestSolutionMMDP;
 	}
 
-	/**
-	 * Method create fitness all neighborhood
-	 * @param bestSolutionMMDP the solution best
-	 * @param chooseNodesNeighbors the neighbors nodes visited
-	 */
-	private void createFitnessNeighborhood (SolutionMMDP bestSolutionMMDP, boolean [] chooseNodesNeighbors){
-		
-		int node = 0;
-		
-		while (! (exitNeighbor(bestSolutionMMDP, chooseNodesNeighbors))){
+//	var
+//	//Cada una de las N1 ,. . . , Nk representa una estructura de vecindad
+//	x0,x1: TipoSolucion;
+//	V : array [. . .] of TipoSolucion;
+//	k:integer; //Vecindad
+//	begin
+//	{x0} := GenerarSolucionInicial ();
+//	{V } := GenerarVecindad (N1);
+//	repeat
+//	k := 1;
+//	repeat
+//	x1 := BusquedaLocal (x0, V ); //Empieza una búsqueda en Nk
+//	if fObjetivo (x1) > fObjetivo (x0) then
+//	//Suponiendo que es mejor el mayor valor de fObjetivo, aunque se trate de minimizar
+//	//Nuevo mínimo local
+//	x0 := x1;
+//	k := 1;
+//	else
+//	k := k + 1;
+//	until k = kmax
+//	until condicion_parada
+//	end
 
-			// create one neighbor
-			SolutionMMDP neighborhoodSolution = createNeighbor(bestSolutionMMDP, chooseNodesNeighbors);
-			double otherValueSolution = instance.getValueObjetiveFunction(neighborhoodSolution);
-
-			// fill table fitness
-			tablaTabuFitnessNeighbors[node][0] = positionOrigin;
-			tablaTabuFitnessNeighbors[node][1] = positionDestination;
-			tablaTabuFitnessNeighbors[node][2] = otherValueSolution;
-			
-			node ++;
-		}
-
-	}
-	
-	/**
-	 * Method delete nodes list tabu
-	 */
-	private void deleteNodesTabu (){
-		for (int i = 0; i < tabuShortTermList.length; i ++){
-			if (tabuShortTermList [i] > 0){
-				// find delete nodes fitness
-				for (int j = 0;  j < tablaTabuFitnessNeighbors.length; j ++){
-					double [] tabuNode = tablaTabuFitnessNeighbors[j];
-					if ((tabuNode[0] == i) || (tabuNode[1] == i)){
-						// Fill tabu node
-						tablaTabuFitnessNeighbors[j][0] = Constants.TABU;
-						tablaTabuFitnessNeighbors[j][1] = Constants.TABU;
-						tablaTabuFitnessNeighbors[j][2] = Constants.TABU;
-					}
-				}
-			}
-		}
-	}
 	
 	/**
 	 * Method choose the best node fitness
