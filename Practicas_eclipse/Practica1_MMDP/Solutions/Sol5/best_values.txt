@@ -1,0 +1,21 @@
+GKD-Ic_1_n500_m50.txt	10.59
+GKD-Ic_2_n500_m50.txt	10.63
+GKD-Ic_3_n500_m50.txt	10.43
+GKD-Ic_4_n500_m50.txt	10.54
+GKD-Ic_5_n500_m50.txt	10.51
+GKD-Ic_6_n500_m50.txt	10.37
+GKD-Ic_7_n500_m50.txt	10.57
+GKD-Ic_8_n500_m50.txt	10.52
+GKD-Ic_9_n500_m50.txt	10.26
+GKD-Ic_10_n500_m50.txt	10.47
+GKD-Ic_11_n500_m50.txt	10.47
+GKD-Ic_12_n500_m50.txt	10.38
+GKD-Ic_13_n500_m50.txt	10.29
+GKD-Ic_14_n500_m50.txt	10.49
+GKD-Ic_15_n500_m50.txt	10.61
+GKD-Ic_16_n500_m50.txt	10.61
+GKD-Ic_17_n500_m50.txt	10.53
+GKD-Ic_18_n500_m50.txt	10.54
+GKD-Ic_19_n500_m50.txt	10.56
+GKD-Ic_20_n500_m50.txt	10.56
+

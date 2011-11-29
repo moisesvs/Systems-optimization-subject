@@ -86,7 +86,7 @@ public class MMDPInstance {
 				numNodesSelection ++;
 		}
 		
-		if (numNodesSelection > matrixDistance.length)
+		if ((numNodesSelection > matrixDistance.length) || (numNodesSelection != m))
 			return false;
 		
 		return true;

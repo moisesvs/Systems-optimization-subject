@@ -16,14 +16,33 @@ public class Constants {
 		/**
 		 * Number neighbord VNS
 		 */
-		public static final int K_NEIGHBORD_VNS = -1;
+		public static final int K_NEIGHBORD_VNS = 3;
 		
 		// Variables algorithm Tabu Search
 		/**
 		 * Time in minutes that is execute algorithm
 		 */
-		public static final int TABU = -1;
+		public static final int NOT_IMPROVE = -1;
 		
+		/**
+		 * Time in minutes that is execute algorithm
+		 */
+		public static final int TABU = 1;
+		
+		/**
+		 * Time in minutes that is execute algorithm
+		 */
+		public static final int NOT_TABU = 0;
+		
+		/**
+		 * Number the aspirations number to objective tabu search
+		 */
+		public static final int NOT_EVALUATE = -1;
+		
+		/**
+		 * Number the aspirations number to objective tabu search
+		 */
+		public static final int ASPIRATIONS_NUMBER_OBJECTIVE = 0;
 		
 		// Variables algorithm First improve, Best improve and random
 		/**
@@ -34,15 +53,20 @@ public class Constants {
 		/**
 		 * Time in minutes that is execute algorithm
 		 */
-		public static final int K_ITERATIONS_TABU = 5;
+		public static final int K_ITERATIONS_TABU = 49;
 		
 		/**
 		 * Time in minutes that is execute algorithm
 		 */
-		public static final float TIME_ALGORITHM = 5f;
+		public static final float TIME_ALGORITHM = 1f;
 		
 		/**
 		 * Time in milliseconds that is execute algorithm
 		 */
 		public static final float TIME_ALGORITHM_MILISECONDS = (TIME_ALGORITHM * 60) * 1000;
+
+		/**
+		 * Time restart algorithm tabu search
+		 */
+		public static final float TIME_RESTART_MILISECONDS = 1200000/*((TIME_ALGORITHM * 60) * 1000) / 2*/;
 }

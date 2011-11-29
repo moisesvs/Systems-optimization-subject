@@ -49,9 +49,11 @@ public abstract class LocalSearch {
 		
 		/**
 		 * Execute local search algorithm to solution MMDP attribute
+		 * @param solutionMMDP The solution current MMDP
+		 * @param initTime init time that begin this algorithm
 		 * @return SolutionMMDP not posible more local search this solution MMDP
 		 */
-		public abstract SolutionMMDP executeLocalSearchAlgorithm(SolutionMMDP solutionMMDP);
+		public abstract SolutionMMDP executeLocalSearchAlgorithm(SolutionMMDP solutionMMDP, long initTime);
 		
 		// get and sets
 		public void setInstance (MMDPInstance instance){

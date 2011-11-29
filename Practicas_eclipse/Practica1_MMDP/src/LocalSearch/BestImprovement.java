@@ -17,7 +17,7 @@ public class BestImprovement extends LocalSearch {
 		 * Execute local search algorithm to solution MMDP attribute
 		 * @return SolutionMMDP not posible more local search this solution MMDP
 		 */
-		public SolutionMMDP executeLocalSearchAlgorithm(SolutionMMDP solutionMMDP){
+		public SolutionMMDP executeLocalSearchAlgorithm(SolutionMMDP solutionMMDP, long initTime){
 			// if the solution has been improved
 			boolean improve = false;
 			

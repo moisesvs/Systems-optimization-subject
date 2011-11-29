@@ -10,8 +10,15 @@ public class Constants {
 		/**
 		 * Name file
 		 */
-		public static final String NAME_FILE = "./Solutions/Algorithm_CutWidth";
+		public static final String NAME_FILE = "./Solutions/Solution_Current/Algorithm_CutWidth";
 		
+		// Parameters algorithm GRASP
+		/**
+		 * Nodes connection
+		 */
+		public static float ALPHA = 0.5f;
+		
+		// Other parameters
 		/**
 		 * Nodes connection
 		 */
@@ -30,7 +37,7 @@ public class Constants {
 		/**
 		 * Time in minutes that is execute algorithm
 		 */
-		public static final float TIME_ALGORITHM = 0.05f;
+		public static final float TIME_ALGORITHM = 1f;
 		
 		/**
 		 * Time in milliseconds that is execute algorithm

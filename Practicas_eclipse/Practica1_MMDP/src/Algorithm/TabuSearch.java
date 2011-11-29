@@ -14,6 +14,11 @@ public class TabuSearch extends Algorithm {
 	private int kIterationsTabu;
 	
 	/**
+	 * Number aspirantions
+	 */
+	private int aspirationsNumber;
+	
+	/**
 	 * Tabu short term list
 	 */
 	private int [] tabuShortTermList;
@@ -38,6 +43,7 @@ public class TabuSearch extends Algorithm {
 	 * First position node origin change
 	 * Second position node destination change
 	 * Third position fitness value
+	 * Four position if tabu or not tabu. 0 not tabu, 1 is tabu
 	 */
 	private double [][] tablaTabuFitnessNeighbors;
 	
@@ -50,11 +56,12 @@ public class TabuSearch extends Algorithm {
 		super(randomGenerator,instance);
 		
 		// init algorithm
-		this.kIterationsTabu = instance.getNumNodesSelection();
+		this.kIterationsTabu = instance.getNumNodes() - 1;
+		this.aspirationsNumber = Constants.ASPIRATIONS_NUMBER_OBJECTIVE;
 		this.tabuShortTermList = new int [instance.getNumNodes()];
 		this.tabuLongTermList = new int [instance.getNumNodes()];
 		this.tablaTabuFitnessNeighbors = new double [(instance.getNumNodes() * instance.getNumNodesSelection()) - 
-		                                             instance.getNumNodesSelection() * instance.getNumNodesSelection() ][3];
+		                                             instance.getNumNodesSelection() * instance.getNumNodesSelection()][4];
 		
 		long timeFirst = System.currentTimeMillis();
 
@@ -84,16 +91,26 @@ public class TabuSearch extends Algorithm {
 
 		// create neighborhood
 		while (true){
+			
 			initAlgorithm(analizingSolution, chooseNodesNeighbors);
 
 			createFitnessNeighborhood(analizingSolution, chooseNodesNeighbors);
 
-			deleteNodesTabu();
+			markNodesTabu();
+			
 			int positionFitnessBestValue = bestNodeFitness();
 			
 			// condition break
-			if (positionFitnessBestValue == Constants.TABU)
+			if (positionFitnessBestValue == Constants.NOT_IMPROVE){
+				System.out.println("No se puede mejorar");
+//				analizingSolution = resetAlgorithm(chooseNodesNeighbors);
 				break;
+			}
+			
+			// reset middle time
+//			if ((System.currentTimeMillis() - timeIni) >= Constants.TIME_RESTART_MILISECONDS){
+//				analizingSolution = resetAlgorithm(chooseNodesNeighbors);
+//			}
 			
 			// set bestSolution
 			analizingSolution = changeNodes(analizingSolution, positionFitnessBestValue);
@@ -122,7 +139,7 @@ public class TabuSearch extends Algorithm {
 		
 		int node = 0;
 		
-		while (! (exitNeighbor(bestSolutionMMDP, chooseNodesNeighbors))){
+		while (!(exitNeighbor(bestSolutionMMDP, chooseNodesNeighbors))){
 
 			// create one neighbor
 			SolutionMMDP neighborhoodSolution = createNeighbor(bestSolutionMMDP, chooseNodesNeighbors);
@@ -132,7 +149,8 @@ public class TabuSearch extends Algorithm {
 			tablaTabuFitnessNeighbors[node][0] = positionOrigin;
 			tablaTabuFitnessNeighbors[node][1] = positionDestination;
 			tablaTabuFitnessNeighbors[node][2] = otherValueSolution;
-			
+			tablaTabuFitnessNeighbors[node][3] = Constants.NOT_TABU;
+
 			node ++;
 		}
 
@@ -141,7 +159,7 @@ public class TabuSearch extends Algorithm {
 	/**
 	 * Method delete nodes list tabu
 	 */
-	private void deleteNodesTabu (){
+	private void markNodesTabu (){
 		for (int i = 0; i < tabuShortTermList.length; i ++){
 			if (tabuShortTermList [i] > 0){
 				// find delete nodes fitness
@@ -149,9 +167,7 @@ public class TabuSearch extends Algorithm {
 					double [] tabuNode = tablaTabuFitnessNeighbors[j];
 					if ((tabuNode[0] == i) || (tabuNode[1] == i)){
 						// Fill tabu node
-						tablaTabuFitnessNeighbors[j][0] = Constants.TABU;
-						tablaTabuFitnessNeighbors[j][1] = Constants.TABU;
-						tablaTabuFitnessNeighbors[j][2] = Constants.TABU;
+						tabuNode[3] = Constants.TABU;
 					}
 				}
 			}
@@ -159,22 +175,74 @@ public class TabuSearch extends Algorithm {
 	}
 	
 	/**
+	 * Reset the tabu search with table short memory
+	 * @return
+	 */
+	private SolutionMMDP resetAlgorithm (boolean [] chooseNodesNeighbors){
+		boolean [] solutionConstruction = new boolean [instance.getNumNodes()];
+		
+		for (int i = 0; i < instance.getNumNodesSelection(); i ++){
+			int node = getBestNodeMemoryShort(solutionConstruction);
+			solutionConstruction[node] = true;
+		}
+		
+		SolutionMMDP solutionAux = new SolutionMMDP(instance, solutionConstruction);
+		initAlgorithm(solutionAux, chooseNodesNeighbors);
+		
+		return solutionAux;
+	}
+	
+	/**
+	 * Get the best node for solution construction
+	 * @param solutionConstruction
+	 * @return
+	 */
+	private int getBestNodeMemoryShort(boolean [] solutionConstruction){
+		int maxNode = -1;
+		int indexNode = -1;
+		
+		for (int i = 0; i < tabuLongTermList.length; i++){
+			if (tabuLongTermList[i] > 0){
+				maxNode = tabuLongTermList[i];
+				indexNode = i;
+			}
+		}
+		
+		if (maxNode == -1){
+			return randomNumber.nextInt(instance.getNumNodes());
+		}
+		
+		tabuLongTermList[indexNode] = 0;
+		return indexNode;
+	}
+	
+	/**
 	 * Method choose the best node fitness
 	 */
 	private int bestNodeFitness (){
 		double bestValueFitness = Double.MIN_VALUE;
-		int positionBestValue = Constants.TABU;
+		int positionBestValue = Constants.NOT_IMPROVE;
 		
 		for (int i = 0; i < tablaTabuFitnessNeighbors.length; i ++){
-			if ((tablaTabuFitnessNeighbors[i][2] != Constants.TABU) && instance.bestValueObjetiveFunction(bestValueFitness, tablaTabuFitnessNeighbors[i][2])){
-				// find best nodes fitness
-				bestValueFitness = tablaTabuFitnessNeighbors[i][2];
-				positionBestValue = i;
+			if ((instance.bestValueObjetiveFunction(bestValueFitness, tablaTabuFitnessNeighbors[i][2]))){
+				
+				if (tablaTabuFitnessNeighbors[i][3] == Constants.TABU){
+					if (aspirationsNumber != 0){
+						// find best nodes fitness
+						bestValueFitness = tablaTabuFitnessNeighbors[i][2];
+						positionBestValue = i;
+					}
+				} else {
+					// set
+					bestValueFitness = tablaTabuFitnessNeighbors[i][2];
+					positionBestValue = i;
+				}
 			}
 		}
+
+		if ((positionBestValue != Constants.NOT_IMPROVE) && (tablaTabuFitnessNeighbors[positionBestValue][3] == Constants.TABU))
+			aspirationsNumber --;
 		
-		if (positionBestValue == Constants.TABU)
-			System.out.println("TABU");
 		return positionBestValue;
 	}
 	
@@ -194,6 +262,9 @@ public class TabuSearch extends Algorithm {
 		
 		// set tabu node
 		tabuShortTermList[positionOriginChange] = kIterationsTabu;
+		
+		// set frecuently node
+		tabuLongTermList[positionDestinationChange] = tabuLongTermList[positionDestinationChange] + 1;
 		
 		currentSolutionNodes[positionOriginChange] = false;
 		currentSolutionNodes[positionDestinationChange] = true;
@@ -267,6 +338,7 @@ public class TabuSearch extends Algorithm {
 			tablaTabuFitnessNeighbors[i][0] = 0;
 			tablaTabuFitnessNeighbors[i][1] = 0;
 			tablaTabuFitnessNeighbors[i][2] = 0;
+			tablaTabuFitnessNeighbors[i][3] = 0;
 		}
 	}
 	

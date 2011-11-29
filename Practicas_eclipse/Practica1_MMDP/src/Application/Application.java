@@ -3,6 +3,7 @@ import java.io.File;
 
 import Algorithm.Algorithm;
 import Algorithm.TabuSearch;
+import Algorithm.VNS;
 import Constructive.RandomSolution;
 import LocalSearch.BestImprovement;
 import LocalSearch.FirstImprovement;
@@ -70,24 +71,32 @@ public class Application {
 
 		MMDPInstance[] instancesFile = loadingInstances(folder);
 		
-		String cadAllInstanceTabuSearch = executeAllInstancesTabuSearch(instancesFile);
-		Toolbox.writeStringToFile(Constants.NAME_FILE + "_TabuSearch", cadAllInstanceTabuSearch);
+//		String cadAllInstanceTabuSearch = executeAllInstancesTabuSearch(instancesFile);
+//		Toolbox.writeStringToFile(Constants.NAME_FILE + "_TabuSearch", cadAllInstanceTabuSearch);
+//		System.out.println(cadAllInstanceTabuSearch + "\n");
+
+		String cadAllInstanceVNS = executeAllInstancesVNS(instancesFile);
+		Toolbox.writeStringToFile(Constants.NAME_FILE + "_VNS", cadAllInstanceVNS);
+		System.out.println(cadAllInstanceVNS + "\n");
 		
 //		String cadAllInstanceFirstImproveRandom = executeAllInstancesFirstImproveRandom(instancesFile);
 //		Toolbox.writeStringToFile(Constants.NAME_FILE + "_FirstImproveRandom", cadAllInstanceFirstImproveRandom);
-		
+//		System.out.println(cadAllInstanceFirstImproveRandom + "\n");
+
 //		String cadAllInstanceFirstImproveLexicographic = executeAllInstancesFirstImproveLexicographic(instancesFile);
 //		Toolbox.writeStringToFile(Constants.NAME_FILE + "_FirstImproveLexicographic", cadAllInstanceFirstImproveLexicographic);
-		
+//		System.out.println(cadAllInstanceFirstImproveLexicographic + "\n");
+
 //		String cadAllInstanceBestImprove = executeAllInstancesBestImprove(instancesFile);
 //		Toolbox.writeStringToFile(Constants.NAME_FILE + "_BestImprove", cadAllInstanceBestImprove);
+//		System.out.println(cadAllInstanceBestImprove + "\n");
 
 //		String cadAllInstanceRandom = executeAllInstancesRandom(instancesFile);
 //		Toolbox.writeStringToFile(Constants.NAME_FILE + "_Random", cadAllInstanceRandom);
-//		
+//		System.out.println(cadAllInstanceRandom + "\n");
+
 //		// print result
 //		System.out.println(cadAllInstanceFirstImprove + "\n" + cadAllInstanceBestImprove + "\n" + cadAllInstanceRandom);
-		System.out.println(cadAllInstanceTabuSearch + "\n");
 
 	}
 
@@ -247,6 +256,30 @@ public class Application {
 			// Creator new random solution with new instance
 			RandomSolution random = new RandomSolution(intance);
 			Algorithm algoritm = new TabuSearch(random, intance);
+			SolutionMMDP solution = algoritm.getBestSolution();
+			cadAux += solution.printFormatMhAnalizer();
+			
+		}
+		
+		return cadAux;
+	}
+	
+	/**
+	 * Execute algorithm with strategy VNS with instances mmdp parameters
+	 * @param instances read of the file
+	 * @return string to write file
+	 */
+	private static String executeAllInstancesVNS(MMDPInstance [] instances){
+		
+		String cadAux = Constants.DESCRIPTION_ALGORITHM + "(VNS)" + "\n";
+		
+		for (int instance = 0; instance < instances.length; instance ++){
+
+			MMDPInstance intance = instances[instance];
+
+			// Creator new random solution with new instance
+			RandomSolution random = new RandomSolution(intance);
+			Algorithm algoritm = new VNS(random, intance);
 			SolutionMMDP solution = algoritm.getBestSolution();
 			cadAux += solution.printFormatMhAnalizer();
 			

@@ -105,6 +105,45 @@ public class CutWidthInstance {
 		 return valueObjetiveFunction;
 	}
 	
+
+	public float getValueObjetiveFunctionArraySolution(int [] solutionAux, int fillArray){
+		 // Function objetive min distance between nodes
+		 float valueObjetiveFunction = Float.MIN_VALUE;
+		 boolean [] nodesVisited = new boolean [getLengthMatrixConnections()];
+
+		 // the node end not visited
+		 for (int posNode = 0; posNode < fillArray; posNode ++){
+			 
+			 int numNode = solutionAux[posNode];
+
+			 nodesVisited[numNode] = true;
+			 int numConnectionNode = 0;
+			 
+			 // other nodes not visited
+			 for (int posNodeVisited = 0;  posNodeVisited < nodesVisited.length; posNodeVisited ++){
+				 if (nodesVisited[posNodeVisited]){
+					 // check if other conexion
+					 for (int otherConexion = 0;  otherConexion < getLengthMatrixConnections(); otherConexion ++){
+						 
+						 if (posNodeVisited != otherConexion && 
+							(!nodesVisited[otherConexion]) &&
+							(isNodeInSolution(solutionAux, otherConexion)) &&
+							(matrixConnection[posNodeVisited][otherConexion] == Constants.NODES_CONNECTION)){
+							 
+							 	numConnectionNode++;
+						 }
+					 }
+				 }
+			 }
+
+			 if (valueObjetiveFunction < numConnectionNode)
+				 valueObjetiveFunction = numConnectionNode;
+
+		 }
+		 
+		 return valueObjetiveFunction;
+	}
+	
 	/**
 	 * If the other value is the best that current objective value function
 	 * @param valueBest the best value found
@@ -116,6 +155,15 @@ public class CutWidthInstance {
 		// Minimum value
 		if (valueBest > otherValue)
 			return true;
+		
+		return false;
+	}
+	
+	private boolean isNodeInSolution (int [] solutionAux, int otherSolution ){
+		for (int i = 0; i < solutionAux.length; i ++){
+			if (solutionAux[i] == otherSolution)
+				return true;
+		}
 		
 		return false;
 	}

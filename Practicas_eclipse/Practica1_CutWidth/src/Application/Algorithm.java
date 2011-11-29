@@ -1,6 +1,7 @@
 package Application;
 
 import Constructive.RandomSolution;
+import LocalSearch.LocalSearch;
 
 public class Algorithm {
 	
@@ -38,6 +39,19 @@ public class Algorithm {
 		bestSolution.setTimeFindSolution(totalTime);
 	}
 	
+	/**
+	 * Execute algorithm with number solution with random generator
+	 * @param randomGenerator
+	 */
+	public Algorithm (RandomSolution randomGenerator, CutWidthInstance instance, LocalSearch localSearch){
+		long timeFirst = System.currentTimeMillis();
+		
+		bestSolution = executeAlgorithmLocalSearchTime(randomGenerator, instance, localSearch, Constants.TIME_ALGORITHM_MILISECONDS);
+		
+		long totalTime = System.currentTimeMillis() - timeFirst;
+		// set time in solution
+		bestSolution.setTimeFindSolution(totalTime);
+	}
 	
 	/**
 	 * Execute algorithm with set solutions
@@ -104,6 +118,42 @@ public class Algorithm {
 		return bestSolution;
 	}
 
+	/**
+	 * Execute algorithm the time parameter
+	 * @param instance instance CutWidth
+	 * @param timeAlgorithm time will be running the algorithm
+	 * @return SolutionCutWidth a solution feasible to the problem instance
+	 */
+	private SolutionCutWidth executeAlgorithmLocalSearchTime (RandomSolution randomGenerator, CutWidthInstance instance, LocalSearch localSearch, float timeAlgoritm){
+
+		// Max solution
+		float bestSolutionValue = Float.MAX_VALUE;
+		SolutionCutWidth analizingSolution = randomGenerator.createSolution();
+		SolutionCutWidth bestSolution = analizingSolution;
+
+		long timeIni = System.currentTimeMillis();
+
+		for (;;){
+			// method improvement return solution improvement
+			SolutionCutWidth solutionImprovement = localSearch.executeLocalSearchAlgorithm(analizingSolution, timeIni);
+			
+			float valueFuntionObjetive = instance.getValueObjetiveFunction(solutionImprovement);
+			
+			if (instance.bestValueObjetiveFunction(bestSolutionValue, valueFuntionObjetive)){
+				bestSolutionValue = valueFuntionObjetive;
+				bestSolution = analizingSolution;
+				bestSolution.setValueFunctionObjetive(valueFuntionObjetive);
+			}
+			
+			analizingSolution = randomGenerator.createSolution();
+
+			if ((System.currentTimeMillis() - timeIni) >= Constants.TIME_ALGORITHM_MILISECONDS)
+				break;
+		}
+		
+		return bestSolution;
+	}
+	
 	// get and sets
 	public SolutionCutWidth getBestSolution() {
 		return bestSolution;

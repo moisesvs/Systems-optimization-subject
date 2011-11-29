@@ -14,20 +14,35 @@ public class VNS extends Algorithm {
 	private int kNeighbors;
 	
 	/**
-	 * Local search algorithm
+	 * Position origin
 	 */
-	private LocalSearch localSearch;
+	private int positionOrigin1;
+	
+	/**
+	 * Position origin
+	 */
+	private int positionOrigin2;
+	
+	/**
+	 * Position destination
+	 */
+	private int positionDestination1;
+	
+	/**
+	 * Position destination
+	 */
+	private int positionDestination2;
 	
 	/**
 	 * Execute algorithm with number solution with random generator
 	 * @param randomGenerator
 	 * @param numSolution
 	 */
-	public VNS (RandomSolution randomGenerator, MMDPInstance instance, LocalSearch localSearch){
+	public VNS (RandomSolution randomGenerator, MMDPInstance instance){
 		super(randomGenerator,instance);
 		
 		// init algorithm
-		this.kNeighbors = Constants.K_NEIGHBORD_VNS;
+		this.kNeighbors = 0;
 		
 		long timeFirst = System.currentTimeMillis();
 		bestSolution = executeAlgorithm(randomGenerator, instance);
@@ -51,28 +66,17 @@ public class VNS extends Algorithm {
 		// Max solution
 		SolutionMMDP bestSolutionMMDP = randomGenerator.createSolution();
 		SolutionMMDP analizingSolution = bestSolutionMMDP;
-		boolean [] chooseNodesNeighbors = new boolean[instance.getNumNodes()];
 
 		// create neighborhood
 		while (true){
-			initAlgorithm(analizingSolution, chooseNodesNeighbors);
 
-			createFitnessNeighborhood(analizingSolution, chooseNodesNeighbors);
-
-			deleteNodesTabu();
-			int positionFitnessBestValue = bestNodeFitness();
-			
-			// condition break
-			if (positionFitnessBestValue == Constants.TABU)
-				break;
-			
-			// set bestSolution
-			analizingSolution = changeNodes(analizingSolution, positionFitnessBestValue);
-			// decrease tabu nodes
-			decreaseTabuNodes();
+			analizingSolution = executeLocalSearch(analizingSolution, timeIni);
 			
 			if (instance.bestValueObjetiveFunction(bestSolutionMMDP.getValueFunctionObjetive(), analizingSolution.getValueFunctionObjetive())){
 				bestSolutionMMDP = analizingSolution;
+				this.kNeighbors = 0;
+			} else {
+				increaseNumberNeighborhood();
 			}
 			
 			// condition break
@@ -107,88 +111,29 @@ public class VNS extends Algorithm {
 //	until condicion_parada
 //	end
 
-	
-	/**
-	 * Method choose the best node fitness
-	 */
-	private int bestNodeFitness (){
-		double bestValueFitness = Double.MIN_VALUE;
-		int positionBestValue = Constants.TABU;
-		
-		for (int i = 0; i < tablaTabuFitnessNeighbors.length; i ++){
-			if ((tablaTabuFitnessNeighbors[i][2] != Constants.TABU) && instance.bestValueObjetiveFunction(bestValueFitness, tablaTabuFitnessNeighbors[i][2])){
-				// find best nodes fitness
-				bestValueFitness = tablaTabuFitnessNeighbors[i][2];
-				positionBestValue = i;
-			}
-		}
-		
-		if (positionBestValue == Constants.TABU)
-			System.out.println("TABU");
-		return positionBestValue;
-	}
-	
-	/**
-	 * Change nodes in solution
-	 * @param positionBestValue
-	 */
-	private SolutionMMDP changeNodes (SolutionMMDP analyzingSolution, int positionBestValue){
-
-		// change node
-		boolean [] currentSolutionNodes = analyzingSolution.getSolution().clone();
-		
-		double [] fitnessValues = tablaTabuFitnessNeighbors[positionBestValue];
-		int positionOriginChange = (int)fitnessValues[0];
-		int positionDestinationChange = (int)fitnessValues[1];
-		double bestSolutionValue = fitnessValues[2];
-		
-		// set tabu node
-		tabuShortTermList[positionOriginChange] = kIterationsTabu;
-		
-		currentSolutionNodes[positionOriginChange] = false;
-		currentSolutionNodes[positionDestinationChange] = true;
-
-		SolutionMMDP analyzingSolutionAux = new SolutionMMDP(instance, currentSolutionNodes);
-		analyzingSolutionAux.setValueFunctionObjetive(bestSolutionValue);
-		
-		return analyzingSolutionAux;
-	}
-	
-	
-	private void decreaseTabuNodes (){
-		for (int i = 0; i < tabuShortTermList.length; i++){
-			if (tabuShortTermList[i] > 0)
-				tabuShortTermList[i] -= 1;
-		}
-	}
-	
 	/**
 	 * Create the neighborhood with a move in the solution
 	 * @param currentSolution
 	 * @return
 	 */
-	private SolutionMMDP createNeighbor (SolutionMMDP currentSolution, boolean [] chooseNodesNeighbors){
-		// clone solution
-		boolean [] currentSolutionNodes = currentSolution.getSolution();
-		boolean [] currentSolutionNodesCopy = currentSolution.getSolution().clone();
-
-		// polity first improve change the first node find 
-		for(int i = 0; i < currentSolutionNodes.length; i ++){
-			// choose node not change last
-			positionDestination = i;
+	private SolutionMMDP executeLocalSearch (SolutionMMDP currentSolution, long timeIni){
+		SolutionMMDP solutionAux = currentSolution;
+		
+		switch (kNeighbors){
+		
+			case 0:
+					// change two nodes
+					solutionAux = executeLocalSearchAlgorithm(currentSolution, timeIni);
+					break;
 			
-			if (!chooseNodesNeighbors[positionDestination]){
-				chooseNodesNeighbors[positionDestination] = true;
-				break;
-			}
+			case 1:
+					// change two nodes
+					solutionAux = executeLocalSearchTwoChangeAlgorithm(currentSolution, timeIni);
+					break;
+					
 		}
-		
-		// change values
-		currentSolutionNodesCopy[positionOrigin] = false;
-		currentSolutionNodesCopy[positionDestination] = true;
-		
-		SolutionMMDP solutionNeighbor = new SolutionMMDP(instance, currentSolutionNodesCopy);
-		return solutionNeighbor;
+
+		return solutionAux;
 	}
 	
 	/**
@@ -205,19 +150,14 @@ public class VNS extends Algorithm {
 				chooseNeighbors[i] = true;
 			else 
 				chooseNeighbors[i] = false;
-
 		}
 	}
 	
-	/**
-	 * Init table tabu fitness neighbors
-	 */
-	private void initTableTabuFitnessNeighbors(){	
-		for (int i = 0; i < tablaTabuFitnessNeighbors.length; i ++){
-			tablaTabuFitnessNeighbors[i][0] = 0;
-			tablaTabuFitnessNeighbors[i][1] = 0;
-			tablaTabuFitnessNeighbors[i][2] = 0;
-		}
+	private void increaseNumberNeighborhood (){
+		if (kNeighbors == 0)
+			kNeighbors ++;
+		else
+			kNeighbors = 0;
 	}
 	
 	/**
@@ -229,8 +169,28 @@ public class VNS extends Algorithm {
 
 		for (int i = 0; i < solutionAux.length; i++){
 			if (solutionAux[i]){
-				positionOrigin = i;
+				positionOrigin1 = i;
 				return;
+			}
+		}
+	}
+	
+	/**
+	 * Select the first node select current
+	 * @param solution
+	 */
+	private void selectTwoOrigin (SolutionMMDP solution){
+		boolean [] solutionAux = solution.getSolution();
+		boolean position1Choose = true;
+		for (int i = 0; i < solutionAux.length; i++){
+			if (solutionAux[i]){
+				if (position1Choose){
+					positionOrigin1 = i;
+					position1Choose = false;
+				} else {
+					positionOrigin2 = i;
+					return;
+				}
 			}
 		}
 	}
@@ -239,9 +199,10 @@ public class VNS extends Algorithm {
 	 * Method that initialization algorithm
 	 */
 	private void initAlgorithm (SolutionMMDP solution, boolean [] chooseNodesNeighbors){
-		selectFirstOrigin(solution);
+		// Select neighborhood
+		increaseNumberNeighborhood();
+		
 		initChooseNodeNeighbors(solution, chooseNodesNeighbors);
-		initTableTabuFitnessNeighbors();
 	}
 	
 	/**
@@ -264,11 +225,209 @@ public class VNS extends Algorithm {
 		for (int nodeOrigin = 0; nodeOrigin < solutionArray.length; nodeOrigin ++){
 			if (solutionArray[nodeOrigin]){
 				
-				if (nodeOrigin == positionOrigin){
+				if (nodeOrigin == positionOrigin1){
 					flagFind = true;
 				} else if (flagFind){
 					// change current node origin
-					positionOrigin = nodeOrigin;
+					positionOrigin1 = nodeOrigin;
+					// reset neigboors
+					initChooseNodeNeighbors(solution, chooseNodesNeighbors);
+					return false;
+				}
+			}
+		}
+		
+		return true;
+	}
+
+	/**
+	 * Execute local search algorithm to solution MMDP attribute
+	 * @return SolutionMMDP not posible more local search this solution MMDP
+	 */
+	public SolutionMMDP executeLocalSearchAlgorithm(SolutionMMDP solutionMMDP, long initTime){
+		
+		boolean [] chooseNodesNeighbors = new boolean[instance.getNumNodes()];
+		initChooseNodeNeighbors(solutionMMDP, chooseNodesNeighbors);
+
+		SolutionMMDP bestSolutionMMDP =  solutionMMDP;
+		double bestSolutionValue = instance.getValueObjetiveFunction(solutionMMDP);
+		selectFirstOrigin(bestSolutionMMDP);
+
+		// create one neighbor
+		SolutionMMDP neighborhoodSolution = createNeighbor(solutionMMDP, chooseNodesNeighbors);			
+		
+		// execute algorithm
+		while (true){
+
+			double otherValueSolution = instance.getValueObjetiveFunction(neighborhoodSolution);
+			if (instance.bestValueObjetiveFunction(bestSolutionValue, otherValueSolution)){
+				
+				bestSolutionValue = otherValueSolution;
+				bestSolutionMMDP = neighborhoodSolution;
+				
+				bestSolutionMMDP.setValueFunctionObjetive(bestSolutionValue);
+				
+				resetNeighbor(neighborhoodSolution, chooseNodesNeighbors);
+			}
+			
+			// check if all neighbor visited
+			if ((exitNeighbor(bestSolutionMMDP, chooseNodesNeighbors)) || ((System.currentTimeMillis() - initTime) >= Constants.TIME_ALGORITHM_MILISECONDS))
+				break;
+			
+			// create one neighbor
+			neighborhoodSolution = createNeighbor(bestSolutionMMDP, chooseNodesNeighbors);
+		}
+		
+		return bestSolutionMMDP;
+	}
+	
+	/**
+	 * Create the neighborhood with a move in the solution
+	 * @param currentSolution
+	 * @return
+	 */
+	private SolutionMMDP createNeighbor (SolutionMMDP currentSolution, boolean [] chooseNodesNeighbors){
+		// clone solution
+		boolean [] currentSolutionNodes = currentSolution.getSolution();
+		boolean [] currentSolutionNodesCopy = currentSolution.getSolution().clone();
+
+
+		// polity first improve change the first node find 
+		for(int i = 0; i < currentSolutionNodes.length; i ++){
+			// choose node not change last
+			positionDestination1 = i;
+			
+			if (!chooseNodesNeighbors[positionDestination1]){
+				chooseNodesNeighbors[positionDestination1] = true;
+				break;
+			}
+		}
+
+		// change values
+		currentSolutionNodesCopy[positionOrigin1] = false;
+		currentSolutionNodesCopy[positionDestination1] = true;
+		
+		SolutionMMDP solutionNeighbor = new SolutionMMDP(instance, currentSolutionNodesCopy);
+		return solutionNeighbor;
+	}
+
+	/**
+	 * Execute local search algorithm to solution MMDP attribute
+	 * @return SolutionMMDP not posible more local search this solution MMDP
+	 */
+	public SolutionMMDP executeLocalSearchTwoChangeAlgorithm(SolutionMMDP solutionMMDP, long initTime){
+		
+		boolean [] chooseNodesNeighbors = new boolean[instance.getNumNodes()];
+		initChooseNodeNeighbors(solutionMMDP, chooseNodesNeighbors);
+
+		SolutionMMDP bestSolutionMMDP =  solutionMMDP;
+		double bestSolutionValue = instance.getValueObjetiveFunction(solutionMMDP);
+		selectTwoOrigin(bestSolutionMMDP);
+
+		// create one neighbor
+		SolutionMMDP neighborhoodSolution = createTwoChangeNeighbor(solutionMMDP, chooseNodesNeighbors);			
+		
+		// execute algorithm
+		while (true){
+
+			double otherValueSolution = instance.getValueObjetiveFunction(neighborhoodSolution);
+			if (instance.bestValueObjetiveFunction(bestSolutionValue, otherValueSolution)){
+				
+				bestSolutionValue = otherValueSolution;
+				bestSolutionMMDP = neighborhoodSolution;
+				
+				bestSolutionMMDP.setValueFunctionObjetive(bestSolutionValue);
+				
+				resetNeighborTwo(neighborhoodSolution, chooseNodesNeighbors);
+			}
+			
+			// check if all neighbor visited
+			if ((exitNeighborTwo(bestSolutionMMDP, chooseNodesNeighbors)) || ((System.currentTimeMillis() - initTime) >= Constants.TIME_ALGORITHM_MILISECONDS))
+				break;
+			
+			// create one neighbor
+			neighborhoodSolution = createTwoChangeNeighbor(bestSolutionMMDP, chooseNodesNeighbors);
+		}
+		
+		return bestSolutionMMDP;
+	}
+	
+	/**
+	 * Create the neighborhood with a move in the solution
+	 * @param currentSolution
+	 * @return
+	 */
+	private SolutionMMDP createTwoChangeNeighbor (SolutionMMDP currentSolution, boolean [] chooseNodesNeighbors){
+		// clone solution
+		boolean [] currentSolutionNodes = currentSolution.getSolution();
+		boolean [] currentSolutionNodesCopy = currentSolution.getSolution().clone();
+		boolean position1Choose = true;
+		
+		// polity first improve change the first node find 
+		for(int i = 0; i < currentSolutionNodes.length; i ++){
+			
+			if (position1Choose){			
+				// choose node not change last
+				positionDestination1 = i;
+				
+				if (!chooseNodesNeighbors[positionDestination1]){
+					chooseNodesNeighbors[positionDestination1] = true;
+					position1Choose = false;
+				}
+				
+			} else {
+				positionDestination2 = i;
+				if (!chooseNodesNeighbors[positionDestination2]){
+					chooseNodesNeighbors[positionDestination2] = true;
+					break;
+				}
+			}
+		}
+
+		// change values
+		currentSolutionNodesCopy[positionOrigin1] = false;
+		currentSolutionNodesCopy[positionDestination1] = true;
+		
+		currentSolutionNodesCopy[positionOrigin2] = false;
+		currentSolutionNodesCopy[positionDestination2] = true;
+		
+		SolutionMMDP solutionNeighbor = new SolutionMMDP(instance, currentSolutionNodesCopy);
+		return solutionNeighbor;
+	}
+	
+	/**
+	 * If there are neighbors to visit
+	 * @param solutionArray
+	 * @param chooseNodesNeighbors
+	 * @return if there are neighbors to visit
+	 */
+	private boolean exitNeighborTwo(SolutionMMDP solution, boolean [] chooseNodesNeighbors){
+		// get solution array
+		boolean [] solutionArray = solution.getSolution();
+
+		for (int node = 0; node < solutionArray.length; node ++){
+			if (!chooseNodesNeighbors[node])
+				return false;
+		}
+		
+		boolean flagFindNode1 = false;
+		boolean flagFindNode2 = false;
+
+		// search node origin change
+		for (int nodeOrigin = 0; nodeOrigin < solutionArray.length; nodeOrigin ++){
+			if (solutionArray[nodeOrigin]){
+				
+				if (nodeOrigin == positionOrigin1){
+					flagFindNode1 = true;
+				} else if (flagFindNode1){
+					// change current node origin
+					positionOrigin1 = nodeOrigin;
+					// reset neigboors
+				} else if (nodeOrigin == positionOrigin2){
+					flagFindNode2 = true;
+				} else if (flagFindNode2){
+					// change current node origin
+					positionOrigin2 = nodeOrigin;
 					// reset neigboors
 					initChooseNodeNeighbors(solution, chooseNodesNeighbors);
 					return false;
@@ -279,46 +438,39 @@ public class VNS extends Algorithm {
 		return true;
 	}
 	
-	// get and sets
 	/**
-	 * @return the kIterationsTabu
+	 * Reset the list nodes neighbors visited
+	 * @param chooseNodesNeighbors
 	 */
-	public int getkIterationsTabu() {
-		return kIterationsTabu;
-	}
+	private void resetNeighbor (SolutionMMDP solution, boolean [] chooseNodesNeighbors){
+		boolean [] solutionAux = solution.getSolution();
+		
+		for (int node = 0; node < chooseNodesNeighbors.length; node ++)
+			if (solutionAux[node])
+				chooseNodesNeighbors[node] = true;
+			else
+				chooseNodesNeighbors[node] = false;
 
-	/**
-	 * @param kIterationsTabu the kIterationsTabu to set
-	 */
-	public void setkIterationsTabu(int kIterationsTabu) {
-		this.kIterationsTabu = kIterationsTabu;
+		// set position ini
+		selectFirstOrigin(solution);			
+		return;
 	}
-
+	
 	/**
-	 * @return the tabuShortTermList
+	 * Reset the list nodes neighbors visited
+	 * @param chooseNodesNeighbors
 	 */
-	public int [] getTabuShortTermList() {
-		return tabuShortTermList;
-	}
+	private void resetNeighborTwo (SolutionMMDP solution, boolean [] chooseNodesNeighbors){
+		boolean [] solutionAux = solution.getSolution();
+		
+		for (int node = 0; node < chooseNodesNeighbors.length; node ++)
+			if (solutionAux[node])
+				chooseNodesNeighbors[node] = true;
+			else
+				chooseNodesNeighbors[node] = false;
 
-	/**
-	 * @param tabuShortTermList the tabuShortTermList to set
-	 */
-	public void setTabuShortTermList(int [] tabuShortTermList) {
-		this.tabuShortTermList = tabuShortTermList;
-	}
-
-	/**
-	 * @return the tabuLongTermList
-	 */
-	public int [] getTabuLongTermList() {
-		return tabuLongTermList;
-	}
-
-	/**
-	 * @param tabuLongTermList the tabuLongTermList to set
-	 */
-	public void setTabuLongTermList(int [] tabuLongTermList) {
-		this.tabuLongTermList = tabuLongTermList;
+		// set position ini
+		selectTwoOrigin(solution);			
+		return;
 	}
 }

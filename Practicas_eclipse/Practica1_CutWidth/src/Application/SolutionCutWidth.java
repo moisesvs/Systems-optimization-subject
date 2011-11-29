@@ -45,7 +45,7 @@ public class SolutionCutWidth {
 	public boolean isFactible(){
 		
 		// Check if not higher that num 
-		if (this.solution.length != (this.instanceCutwidth.getLengthMatrixConnections()))
+		if (this.solution.length != (this.instanceCutwidth.getLengthMatrixConnections() - 1))
 			return false;
 				
 		// Check if not higher that num connections

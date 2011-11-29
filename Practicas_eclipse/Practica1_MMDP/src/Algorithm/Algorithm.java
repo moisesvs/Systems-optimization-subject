@@ -177,7 +177,7 @@ public class Algorithm {
 
 		for (;;){
 			// method improvement return solution improvement
-			SolutionMMDP solutionImprovement = localSearch.executeLocalSearchAlgorithm(analizingSolution);
+			SolutionMMDP solutionImprovement = localSearch.executeLocalSearchAlgorithm(analizingSolution, timeIni);
 			
 			double valueFuntionObjetive = instance.getValueObjetiveFunction(solutionImprovement);
 			
